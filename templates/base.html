@@ -1,0 +1,41 @@
+<!-- Base template for all pages -->
+<!-- Includes navigation bar and common HTML structure -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Student Placement Tracker{% endblock %}</title>
+    <link rel="stylesheet" href="{{ request.url_for('static', path='style.css') }}">
+</head>
+<body>
+    <!-- Navigation bar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-brand">
+                <h1>Student Placement Tracker</h1>
+            </div>
+            <ul class="navbar-menu">
+                {% if session.user_id %}
+                    <li><a href="{{ request.url_for('dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ request.url_for('logout') }}">Logout ({{ session.user_name }})</a></li>
+                {% else %}
+                    <li><a href="{{ request.url_for('login') }}">Login</a></li>
+                    <li><a href="{{ request.url_for('register') }}">Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main content area -->
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 Student Placement Tracker. All rights reserved.</p>
+    </footer>
+</body>
+</html>

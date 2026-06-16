@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Add Application - Student Placement Tracker{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-box">
+        <h2>📁 Add Placement Application</h2>
+        
+        <!-- Display error messages if any -->
+        {% if error %}
+            <div class="alert alert-danger">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <!-- Add application form -->
+        <form method="POST" class="form-content">
+            <div class="form-group">
+                <label for="company_name">Company Name:</label>
+                <input type="text" id="company_name" name="company_name" required placeholder="e.g., Google, Microsoft, Amazon">
+                <small>Enter the name of the company you applied to</small>
+            </div>
+
+            <div class="form-group">
+                <label for="status">Application Status:</label>
+                <select id="status" name="status" required>
+                    <option value="Applied">Applied</option>
+                    <option value="Interview Scheduled">Interview Scheduled</option>
+                    <option value="Selected">Selected</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+                <small>Select the current status of your application</small>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Add Application</button>
+                <a href="{{ request.url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

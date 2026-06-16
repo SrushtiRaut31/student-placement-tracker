@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Error - Student Placement Tracker{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <div class="error-box">
+        <h2>Oops! An Error Occurred</h2>
+        
+        <!-- Display error message -->
+        {% if error %}
+            <div class="alert alert-danger">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <!-- Return to dashboard link -->
+        <p>
+                <a href="{{ request.url_for('dashboard') }}" class="btn btn-primary">Back to Dashboard</a>
+            <a href="{{ request.url_for('login') }}" class="btn btn-secondary">Back to Login</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
