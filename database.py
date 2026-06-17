@@ -3,9 +3,9 @@
 
 import os
 import sqlite3
-import psycopg2
-from psycopg2 import sql
-from psycopg2.extras import RealDictCursor
+import psycopg
+from psycopg import sql
+from psycopg.rows import dict_row
 
 # Database configuration
 SQLITE_DATABASE = 'database.db'
@@ -31,7 +31,7 @@ def get_db_connection():
     the connection in a clean state for the caller.
     """
     database_url = get_database_url()
-    conn = psycopg2.connect(database_url)
+    conn = psycopg.connect(database_url)
     with conn.cursor() as cursor:
         cursor.execute(sql.SQL('SET search_path TO {}').format(sql.Identifier(PG_SCHEMA)))
     conn.commit()
@@ -40,7 +40,7 @@ def get_db_connection():
 
 def get_db_cursor(conn):
     """Return a RealDictCursor for the given connection."""
-    return conn.cursor(cursor_factory=RealDictCursor)
+    return conn.cursor(row_factory=dict_row)
 
 
 def migrate_sqlite_to_postgres():
