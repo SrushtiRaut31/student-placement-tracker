@@ -70,7 +70,7 @@
     <div class="skills-section card">
         <div class="section-header">
             <h3>🎯 Your Skills</h3>
-            <a href="{{ request.url_for('add_skill') }}" class="btn btn-success">+ Add Skill</a>
+            <a href="{{ request.url_for('add_skill_form') }}" class="btn btn-success">+ Add Skill</a>
         </div>
 
         {% if skills %}
@@ -85,7 +85,7 @@
                 {% endfor %}
             </div>
         {% else %}
-            <p class="no-data">📌 No skills added yet. <a href="{{ request.url_for('add_skill') }}">Add your first skill</a></p>
+            <p class="no-data">📌 No skills added yet. <a href="{{ request.url_for('add_skill_form') }}">Add your first skill</a></p>
         {% endif %}
     </div>
 
@@ -93,7 +93,7 @@
     <div class="applications-section card">
         <div class="section-header">
             <h3>📁 Placement Applications</h3>
-            <a href="{{ request.url_for('add_application') }}" class="btn btn-success">+ Add Application</a>
+            <a href="{{ request.url_for('add_application_form') }}" class="btn btn-success">+ Add Application</a>
         </div>
 
         <!-- Search bar -->
@@ -141,7 +141,7 @@
             {% if search_query %}
                 <p class="no-data">🔍 No applications found matching "{{ search_query }}". <a href="{{ request.url_for('dashboard') }}">Clear search</a></p>
             {% else %}
-                <p class="no-data">📌 No applications yet. <a href="{{ request.url_for('add_application') }}">Add your first application</a></p>
+                <p class="no-data">📌 No applications yet. <a href="{{ request.url_for('add_application_form') }}">Add your first application</a></p>
             {% endif %}
         {% endif %}
     </div>

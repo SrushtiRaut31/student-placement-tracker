@@ -22,7 +22,7 @@
                     <li><a href="{{ request.url_for('logout') }}">Logout ({{ request.session.get('user_name', '') }})</a></li>
                 {% else %}
                     <li><a href="{{ request.url_for('login_form') }}">Login</a></li>
-                    <li><a href="{{ request.url_for('register') }}">Register</a></li>
+                    <li><a href="{{ request.url_for('register_form') }}">Register</a></li>
                 {% endif %}
             </ul>
         </div>
