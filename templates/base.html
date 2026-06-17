@@ -17,11 +17,11 @@
                 <h1>Student Placement Tracker</h1>
             </div>
             <ul class="navbar-menu">
-                {% if session.user_id %}
+                {% if request.session.get('user_id') %}
                     <li><a href="{{ request.url_for('dashboard') }}">Dashboard</a></li>
-                    <li><a href="{{ request.url_for('logout') }}">Logout ({{ session.user_name }})</a></li>
+                    <li><a href="{{ request.url_for('logout') }}">Logout ({{ request.session.get('user_name', '') }})</a></li>
                 {% else %}
-                    <li><a href="{{ request.url_for('login') }}">Login</a></li>
+                    <li><a href="{{ request.url_for('login_form') }}">Login</a></li>
                     <li><a href="{{ request.url_for('register') }}">Register</a></li>
                 {% endif %}
             </ul>

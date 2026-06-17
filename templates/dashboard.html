@@ -6,7 +6,7 @@
 <div class="dashboard-container">
     <!-- Welcome section -->
     <div class="welcome-section">
-        <h2>Welcome, {{ session.user_name }}! 👋</h2>
+        <h2>Welcome, {{ request.session.get('user_name', '') }}! 👋</h2>
         <p>Track your skills and manage your placement journey</p>
     </div>
 
