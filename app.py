@@ -9,9 +9,9 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 import os
 import sqlite3
-import psycopg2
-from psycopg2 import sql
-from psycopg2.extras import RealDictCursor
+import psycopg
+from psycopg import sql
+from psycopg.rows import dict_row
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -86,7 +86,7 @@ def get_db_connection():
     if not DATABASE_URL:
         raise RuntimeError('DATABASE_URL is not configured. Set it in the .env file or environment.')
 
-    conn = psycopg2.connect(DATABASE_URL)
+    conn = psycopg.connect(DATABASE_URL)
     with conn.cursor() as cursor:
         cursor.execute(sql.SQL('SET search_path TO {}').format(sql.Identifier(PG_SCHEMA)))
     conn.commit()
@@ -94,7 +94,7 @@ def get_db_connection():
 
 
 def get_db_cursor(conn):
-    return conn.cursor(cursor_factory=RealDictCursor)
+    return conn.cursor(row_factory=dict_row)
 
 
 def migrate_sqlite_to_postgres():
@@ -350,7 +350,7 @@ async def register_submit(
 
         return RedirectResponse(url=request.url_for('login'), status_code=302)
 
-    except psycopg2.Error as e:
+    except Exception as e:
         return templates.TemplateResponse("register.html", {"request": request, "error": f"Database error: {str(e)}"})
 
 
@@ -378,7 +378,7 @@ async def login_submit(
 
     try:
         conn = get_db_connection()
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor = conn.cursor(row_factory=dict_row)
 
         # Query database for matching email and password
         cursor.execute(
@@ -397,7 +397,7 @@ async def login_submit(
         else:
             return templates.TemplateResponse("login.html", {"request": request, "error": "Invalid email or password!"})
 
-    except psycopg2.Error as e:
+    except Exception as e:
         return templates.TemplateResponse("login.html", {"request": request, "error": f"Database error: {str(e)}"})
 
 
@@ -428,7 +428,7 @@ async def dashboard(request: Request, search: Optional[str] = Query(None)):
 
     try:
         conn = get_db_connection()
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor = conn.cursor(row_factory=dict_row)
 
         # Get student information
         cursor.execute('SELECT * FROM students WHERE id = %s', (user_id,))
@@ -476,7 +476,7 @@ async def dashboard(request: Request, search: Optional[str] = Query(None)):
             }
         )
 
-    except psycopg2.Error as e:
+    except Exception as e:
         return templates.TemplateResponse("error.html", {"request": request, "error": f"Database error: {str(e)}"})
 
 
@@ -523,7 +523,7 @@ async def add_skill_submit(
 
         return RedirectResponse(url=request.url_for('dashboard'), status_code=302)
 
-    except psycopg2.Error as e:
+    except Exception as e:
         return templates.TemplateResponse("add_skill.html", {"request": request, "error": f"Database error: {str(e)}"})
 
 
@@ -540,7 +540,7 @@ async def delete_skill(request: Request, skill_id: int):
 
     try:
         conn = get_db_connection()
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor = conn.cursor(row_factory=dict_row)
 
         # Verify that the skill belongs to the current user
         cursor.execute(
@@ -562,7 +562,7 @@ async def delete_skill(request: Request, skill_id: int):
 
         return RedirectResponse(url=request.url_for('dashboard'), status_code=302)
 
-    except psycopg2.Error as e:
+    except Exception as e:
         return JSONResponse(status_code=500, content={'error': f'Database error: {str(e)}'})
 
 
@@ -610,7 +610,7 @@ async def add_application_submit(
 
         return RedirectResponse(url=request.url_for('dashboard'), status_code=302)
 
-    except psycopg2.Error as e:
+    except Exception as e:
         return templates.TemplateResponse("add_application.html", {"request": request, "error": f"Database error: {str(e)}"})
 
 
@@ -656,7 +656,7 @@ async def api_register(request: Request):
 
         return JSONResponse(status_code=201, content={'message': 'Registration successful'})
 
-    except psycopg2.Error as e:
+    except Exception as e:
         return JSONResponse(status_code=500, content={'error': f'Database error: {str(e)}'})
 
 
@@ -671,7 +671,7 @@ async def api_login(request: Request):
 
     try:
         conn = get_db_connection()
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor = conn.cursor(row_factory=dict_row)
 
         cursor.execute(
             'SELECT id, name FROM students WHERE email = %s AND password = %s',
@@ -690,7 +690,7 @@ async def api_login(request: Request):
             })
         return JSONResponse(status_code=401, content={'error': 'Invalid email or password!'})
 
-    except psycopg2.Error as e:
+    except Exception as e:
         return JSONResponse(status_code=500, content={'error': f'Database error: {str(e)}'})
 
 
@@ -698,7 +698,7 @@ async def api_login(request: Request):
 async def api_get_skills(request: Request, user_id: int = Depends(login_required_api)):
     try:
         conn = get_db_connection()
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor = conn.cursor(row_factory=dict_row)
         cursor.execute('SELECT * FROM skills WHERE student_id = %s', (user_id,))
         skills = cursor.fetchall()
         cursor.close()
@@ -706,7 +706,7 @@ async def api_get_skills(request: Request, user_id: int = Depends(login_required
 
         return JSONResponse(status_code=200, content={'skills': [dict(skill) for skill in skills]})
 
-    except psycopg2.Error as e:
+    except Exception as e:
         return JSONResponse(status_code=500, content={'error': f'Database error: {str(e)}'})
 
 
@@ -720,7 +720,7 @@ async def api_add_skill(request: Request, user_id: int = Depends(login_required_
 
     try:
         conn = get_db_connection()
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor = conn.cursor(row_factory=dict_row)
         cursor.execute(
             'INSERT INTO skills (student_id, skill_name) VALUES (%s, %s) RETURNING *',
             (user_id, skill_name)
@@ -732,7 +732,7 @@ async def api_add_skill(request: Request, user_id: int = Depends(login_required_
 
         return JSONResponse(status_code=201, content={'message': 'Skill added', 'skill': dict(skill)})
 
-    except psycopg2.Error as e:
+    except Exception as e:
         return JSONResponse(status_code=500, content={'error': f'Database error: {str(e)}'})
 
 
@@ -740,7 +740,7 @@ async def api_add_skill(request: Request, user_id: int = Depends(login_required_
 async def api_delete_skill(request: Request, skill_id: int, user_id: int = Depends(login_required_api)):
     try:
         conn = get_db_connection()
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor = conn.cursor(row_factory=dict_row)
         cursor.execute(
             'SELECT id FROM skills WHERE id = %s AND student_id = %s',
             (skill_id, user_id)
@@ -759,7 +759,7 @@ async def api_delete_skill(request: Request, skill_id: int, user_id: int = Depen
 
         return JSONResponse(status_code=200, content={'message': 'Skill deleted'})
 
-    except psycopg2.Error as e:
+    except Exception as e:
         return JSONResponse(status_code=500, content={'error': f'Database error: {str(e)}'})
 
 
@@ -773,7 +773,7 @@ async def api_get_applications(
 
     try:
         conn = get_db_connection()
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor = conn.cursor(row_factory=dict_row)
 
         if search_query:
             cursor.execute(
@@ -789,7 +789,7 @@ async def api_get_applications(
 
         return JSONResponse(status_code=200, content={'applications': [dict(app) for app in applications]})
 
-    except psycopg2.Error as e:
+    except Exception as e:
         return JSONResponse(status_code=500, content={'error': f'Database error: {str(e)}'})
 
 
@@ -804,7 +804,7 @@ async def api_add_application(request: Request, user_id: int = Depends(login_req
 
     try:
         conn = get_db_connection()
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor = conn.cursor(row_factory=dict_row)
         cursor.execute(
             'INSERT INTO applications (student_id, company_name, status) VALUES (%s, %s, %s) RETURNING *',
             (user_id, company_name, status)
@@ -816,7 +816,7 @@ async def api_add_application(request: Request, user_id: int = Depends(login_req
 
         return JSONResponse(status_code=201, content={'message': 'Application added', 'application': dict(application)})
 
-    except psycopg2.Error as e:
+    except Exception as e:
         return JSONResponse(status_code=500, content={'error': f'Database error: {str(e)}'})
 
 
@@ -832,7 +832,7 @@ async def api_get_student(request: Request, student_id: int, user_id: int = Depe
 
     try:
         conn = get_db_connection()
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor = conn.cursor(row_factory=dict_row)
 
         cursor.execute('SELECT id, name, email FROM students WHERE id = %s', (student_id,))
         student = cursor.fetchone()
@@ -844,7 +844,7 @@ async def api_get_student(request: Request, student_id: int, user_id: int = Depe
 
         return JSONResponse(status_code=200, content=dict(student))
 
-    except psycopg2.Error as e:
+    except Exception as e:
         return JSONResponse(status_code=500, content={'error': f'Database error: {str(e)}'})
 
 
