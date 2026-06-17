@@ -294,7 +294,7 @@ async def index(request: Request):
     user_id = request.session.get('user_id')
     if user_id is not None:
         return RedirectResponse(url=request.url_for('dashboard'), status_code=302)
-    return RedirectResponse(url=request.url_for('login'), status_code=302)
+    return RedirectResponse(url=request.url_for('login_form'), status_code=302)
 
 
 @app.get('/register', response_class=HTMLResponse)
@@ -348,7 +348,7 @@ async def register_submit(
         cursor.close()
         conn.close()
 
-        return RedirectResponse(url=request.url_for('login'), status_code=302)
+        return RedirectResponse(url=request.url_for('login_form'), status_code=302)
 
     except Exception as e:
         return templates.TemplateResponse("register.html", {"request": request, "error": f"Database error: {str(e)}"})
@@ -408,7 +408,7 @@ async def logout(request: Request):
     Clears the session and redirects to login page.
     """
     request.session.clear()
-    return RedirectResponse(url=request.url_for('login'), status_code=302)
+    return RedirectResponse(url=request.url_for('login_form'), status_code=302)
 
 
 @app.get('/dashboard', response_class=HTMLResponse)
@@ -422,7 +422,7 @@ async def dashboard(request: Request, search: Optional[str] = Query(None)):
     user_id = request.session.get('user_id')
     user_name = request.session.get('user_name')
     if user_id is None or user_name is None:
-        return RedirectResponse(url=request.url_for('login'), status_code=302)
+        return RedirectResponse(url=request.url_for('login_form'), status_code=302)
 
     search_query = search.strip() if search else ''
 
@@ -488,7 +488,7 @@ async def add_skill_form(request: Request):
     """
     user_id = request.session.get('user_id')
     if user_id is None:
-        return RedirectResponse(url=request.url_for('login'), status_code=302)
+        return RedirectResponse(url=request.url_for('login_form'), status_code=302)
     return templates.TemplateResponse("add_skill.html", {"request": request})
 
 
@@ -503,7 +503,7 @@ async def add_skill_submit(
     """
     user_id = request.session.get('user_id')
     if user_id is None:
-        return RedirectResponse(url=request.url_for('login'), status_code=302)
+        return RedirectResponse(url=request.url_for('login_form'), status_code=302)
 
     if not skill_name:
         return templates.TemplateResponse("add_skill.html", {"request": request, "error": "Skill name is required!"})
@@ -536,7 +536,7 @@ async def delete_skill(request: Request, skill_id: int):
     """
     user_id = request.session.get('user_id')
     if user_id is None:
-        return RedirectResponse(url=request.url_for('login'), status_code=302)
+        return RedirectResponse(url=request.url_for('login_form'), status_code=302)
 
     try:
         conn = get_db_connection()
@@ -574,7 +574,7 @@ async def add_application_form(request: Request):
     """
     user_id = request.session.get('user_id')
     if user_id is None:
-        return RedirectResponse(url=request.url_for('login'), status_code=302)
+        return RedirectResponse(url=request.url_for('login_form'), status_code=302)
     return templates.TemplateResponse("add_application.html", {"request": request})
 
 
@@ -590,7 +590,7 @@ async def add_application_submit(
     """
     user_id = request.session.get('user_id')
     if user_id is None:
-        return RedirectResponse(url=request.url_for('login'), status_code=302)
+        return RedirectResponse(url=request.url_for('login_form'), status_code=302)
 
     if not company_name:
         return templates.TemplateResponse("add_application.html", {"request": request, "error": "Company name is required!"})
