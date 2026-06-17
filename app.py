@@ -12,7 +12,7 @@ import sqlite3
 import psycopg
 from psycopg import sql
 from psycopg.rows import dict_row
-from datetime import datetime, timedelta
+from datetime import datetime, date, timedelta
 from typing import Optional
 
 
@@ -55,6 +55,18 @@ templates = Jinja2Templates(directory="templates")
 # Add url_for as a global in Jinja2 templates (mimics Flask's url_for)
 # This wraps request.url_for so templates can use {{ url_for('dashboard') }}
 templates.env.globals["url_for"] = lambda request, name, **params: str(request.url_for(name, **params))
+
+# Custom Jinja2 filter to safely format datetime objects (handles both string and datetime)
+def jinja_date_format(value, fmt="%Y-%m-%d"):
+    if value is None:
+        return "N/A"
+    if isinstance(value, (datetime, date)):
+        return value.strftime(fmt)
+    if isinstance(value, str):
+        return value.split(' ')[0]
+    return str(value)
+
+templates.env.filters["date_format"] = jinja_date_format
 
 # Session middleware for storing user session in cookies (encrypted)
 SESSION_SECRET_KEY = os.getenv('FLASK_SECRET_KEY', 'your_secret_key_change_this_in_production')

@@ -68,6 +68,19 @@ templates.env.globals["url_for"] = lambda request, name, **params: str(
     request.url_for(name, **params)
 )
 
+# Custom Jinja2 filter to safely format datetime objects (handles both string and datetime)
+from datetime import datetime, date
+def jinja_date_format(value, fmt="%Y-%m-%d"):
+    if value is None:
+        return "N/A"
+    if isinstance(value, (datetime, date)):
+        return value.strftime(fmt)
+    if isinstance(value, str):
+        return value.split(' ')[0]
+    return str(value)
+
+templates.env.filters["date_format"] = jinja_date_format
+
 # Session middleware for encrypted cookie-based sessions
 SESSION_SECRET_KEY = os.getenv('FLASK_SECRET_KEY', 'your_secret_key_change_this_in_production')
 app.add_middleware(SessionMiddleware, secret_key=SESSION_SECRET_KEY, max_age=86400)  # 24 hours

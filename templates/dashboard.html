@@ -60,7 +60,7 @@
                 </div>
                 <div class="profile-item">
                     <span class="profile-label">Member Since:</span>
-                    <span class="profile-value">{{ student.created_at.split(' ')[0] if student.created_at else 'N/A' }}</span>
+                    <span class="profile-value">{{ student.created_at|date_format }}</span>
                 </div>
             </div>
         {% endif %}
@@ -128,7 +128,7 @@
                                         {{ app.status }}
                                     </span>
                                 </td>
-                                <td class="date-applied">{{ app.date_applied.split(' ')[0] if app.date_applied else 'N/A' }}</td>
+                                <td class="date-applied">{{ app.date_applied|date_format }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
