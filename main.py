@@ -73,11 +73,11 @@ from datetime import datetime, date
 def jinja_date_format(value, fmt="%Y-%m-%d"):
     if value is None:
         return "N/A"
-    if isinstance(value, (datetime, date)):
+    if hasattr(value, "strftime"):
         return value.strftime(fmt)
     if isinstance(value, str):
-        return value.split(' ')[0]
-    return str(value)
+        return value.split(" ")[0]
+    return str(value).split(" ")[0]
 
 templates.env.filters["date_format"] = jinja_date_format
 
