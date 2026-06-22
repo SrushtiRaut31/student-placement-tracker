@@ -4,52 +4,47 @@
 {% block page_title %}Add New Skill{% endblock %}
 
 {% block content %}
-<div class="auth-wrapper" style="min-height: calc(100vh - 200px);">
-    <div class="auth-card" style="max-width: 600px;">
-        <div class="auth-header">
-            <div class="auth-logo">🛠️</div>
-            <h1 class="auth-title">Add New Skill</h1>
-            <p class="auth-subtitle">Enhance your profile by adding a new skill</p>
-        </div>
-
-        {% if error %}
-            <div class="alert alert-danger">
-                <span class="alert-icon">⚠️</span>
-                <div class="alert-content">
-                    <div class="alert-title">Error</div>
-                    <div class="alert-message">{{ error }}</div>
-                </div>
-            </div>
-        {% endif %}
-
-        <form method="POST" class="auth-form">
-            <div class="form-group">
-                <label for="skill_name" class="form-label">Skill Name</label>
-                <input 
-                    type="text" 
-                    id="skill_name" 
-                    name="skill_name" 
-                    class="form-input" 
-                    required 
-                    placeholder="e.g., Python, Java, React, Machine Learning"
-                    autocomplete="off"
-                >
-                <small class="form-hint">Enter the name of a technical or professional skill you possess</small>
-            </div>
-
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary auth-submit">
-                    ➕ Add Skill
-                </button>
-                <a href="{{ request.url_for('dashboard') }}" class="btn btn-secondary">
-                    Cancel
-                </a>
-            </div>
-        </form>
-
-        <div class="auth-footer">
-            <p>💡 Tip: Add skills that are relevant to your target job roles</p>
-        </div>
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">
+            <span>🛠️</span>
+            <span>Add New Skill</span>
+        </h2>
     </div>
+
+    {% if error %}
+        <div class="alert alert-danger">
+            <span class="alert-icon">⚠️</span>
+            <div class="alert-content">
+                <div class="alert-title">Error</div>
+                <div class="alert-message">{{ error }}</div>
+            </div>
+        </div>
+    {% endif %}
+
+    <form method="POST">
+        <div class="form-group">
+            <label for="skill_name" class="form-label">Skill Name</label>
+            <input 
+                type="text" 
+                id="skill_name" 
+                name="skill_name" 
+                class="form-input" 
+                required 
+                placeholder="e.g., Python, Java, React, Machine Learning"
+                autocomplete="off"
+            >
+            <small class="form-hint">Enter the name of a technical or professional skill you possess</small>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                ➕ Add Skill
+            </button>
+            <a href="{{ request.url_for('dashboard') }}" class="btn btn-secondary">
+                Cancel
+            </a>
+        </div>
+    </form>
 </div>
 {% endblock %}

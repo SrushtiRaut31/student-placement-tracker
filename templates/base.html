@@ -90,11 +90,11 @@
                 <h1>Student Placement Tracker</h1>
             </div>
         </header>
-
-        <!-- Page Content Block for non-authenticated users -->
-        {% block content %}{% endblock %}
     </main>
     {% endif %}
+
+    <!-- Page Content Block - Defined Once -->
+    {% block content %}{% endblock %}
 
     <!-- Footer -->
     <footer class="footer">
