@@ -1,149 +1,212 @@
 {% extends "base.html" %}
 
 {% block title %}Dashboard - Student Placement Tracker{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="dashboard-container">
-    <!-- Welcome section -->
-    <div class="welcome-section">
-        <h2>Welcome, {{ request.session.get('user_name', '') }}! 👋</h2>
-        <p>Track your skills and manage your placement journey</p>
-    </div>
-
-    <!-- Statistics Cards Section -->
-    <div class="statistics-section">
-        <div class="stat-card">
-            <div class="stat-icon skills-icon">🛠️</div>
-            <div class="stat-content">
-                <div class="stat-label">Total Skills</div>
-                <div class="stat-value">{{ statistics.total_skills }}</div>
+<!-- Welcome Banner with Premium Gradient -->
+<div class="welcome-banner">
+    <div class="welcome-content">
+        <div class="welcome-greeting">Welcome Back</div>
+        <h1 class="welcome-title">Hello, {{ request.session.get('user_name', 'Student') }}! 👋</h1>
+        <p class="welcome-subtitle">Track your placement journey and manage your career growth</p>
+        <div class="welcome-stats">
+            <div class="welcome-stat">
+                <div class="welcome-stat-value">{{ statistics.total_skills }}</div>
+                <div class="welcome-stat-label">Total Skills</div>
             </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-icon applications-icon">📋</div>
-            <div class="stat-content">
-                <div class="stat-label">Applications</div>
-                <div class="stat-value">{{ statistics.total_applications }}</div>
+            <div class="welcome-stat">
+                <div class="welcome-stat-value">{{ statistics.total_applications }}</div>
+                <div class="welcome-stat-label">Applications</div>
             </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-icon interview-icon">🎤</div>
-            <div class="stat-content">
-                <div class="stat-label">Interviews</div>
-                <div class="stat-value">{{ statistics.interview_count }}</div>
-            </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-icon selected-icon">✅</div>
-            <div class="stat-content">
-                <div class="stat-label">Selected</div>
-                <div class="stat-value">{{ statistics.selected_count }}</div>
+            <div class="welcome-stat">
+                <div class="welcome-stat-value">{{ statistics.selected_count }}</div>
+                <div class="welcome-stat-label">Selected</div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Student profile section -->
-    <div class="profile-section card">
-        <h3>📋 Your Profile</h3>
-        {% if student %}
-            <div class="profile-info">
-                <div class="profile-item">
-                    <span class="profile-label">Name:</span>
-                    <span class="profile-value">{{ student.name }}</span>
-                </div>
-                <div class="profile-item">
-                    <span class="profile-label">Email:</span>
-                    <span class="profile-value">{{ student.email }}</span>
-                </div>
-                <div class="profile-item">
-                    <span class="profile-label">Member Since:</span>
-                    <span class="profile-value">{{ student.created_at|date_format }}</span>
-                </div>
-            </div>
-        {% endif %}
+<!-- Quick Actions Panel -->
+<div class="quick-actions">
+    <a href="{{ request.url_for('add_skill_form') }}" class="action-btn">
+        <div class="action-icon">➕</div>
+        <div class="action-label">Add New Skill</div>
+    </a>
+    <a href="{{ request.url_for('add_application_form') }}" class="action-btn">
+        <div class="action-icon">📝</div>
+        <div class="action-label">Add Application</div>
+    </a>
+    <a href="#" class="action-btn" onclick="window.location.reload()">
+        <div class="action-icon">🔄</div>
+        <div class="action-label">Refresh Data</div>
+    </a>
+    <a href="#" class="action-btn">
+        <div class="action-icon">📊</div>
+        <div class="action-label">View Analytics</div>
+    </a>
+</div>
+
+<!-- Statistics Cards -->
+<div class="stats-grid">
+    <div class="stat-card skills">
+        <div class="stat-icon">🛠️</div>
+        <div class="stat-content">
+            <div class="stat-label">Total Skills</div>
+            <div class="stat-value">{{ statistics.total_skills }}</div>
+        </div>
     </div>
 
-    <!-- Skills section -->
-    <div class="skills-section card">
-        <div class="section-header">
-            <h3>🎯 Your Skills</h3>
-            <a href="{{ request.url_for('add_skill_form') }}" class="btn btn-success">+ Add Skill</a>
+    <div class="stat-card applications">
+        <div class="stat-icon">📋</div>
+        <div class="stat-content">
+            <div class="stat-label">Total Applications</div>
+            <div class="stat-value">{{ statistics.total_applications }}</div>
         </div>
-
-        {% if skills %}
-            <div class="skills-list">
-                {% for skill in skills %}
-                    <div class="skill-item">
-                        <span class="skill-name">{{ skill.skill_name }}</span>
-                        <form method="POST" action="{{ request.url_for('delete_skill', skill_id=skill.id) }}" class="skill-delete-form">
-                            <button type="submit" class="btn btn-danger btn-small" onclick="return confirm('Delete this skill?');">×</button>
-                        </form>
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p class="no-data">📌 No skills added yet. <a href="{{ request.url_for('add_skill_form') }}">Add your first skill</a></p>
-        {% endif %}
     </div>
 
-    <!-- Placement applications section -->
-    <div class="applications-section card">
-        <div class="section-header">
-            <h3>📁 Placement Applications</h3>
-            <a href="{{ request.url_for('add_application_form') }}" class="btn btn-success">+ Add Application</a>
+    <div class="stat-card interviews">
+        <div class="stat-icon">🎤</div>
+        <div class="stat-content">
+            <div class="stat-label">Interviews</div>
+            <div class="stat-value">{{ statistics.interview_count }}</div>
         </div>
+    </div>
 
-        <!-- Search bar -->
-        <div class="search-section">
-            <form method="GET" action="{{ request.url_for('dashboard') }}" class="search-form">
-                <div class="search-input-wrapper">
-                    <input type="text" name="search" class="search-input" placeholder="Search by company name..." value="{{ search_query }}">
-                    <button type="submit" class="btn btn-primary btn-search">🔍 Search</button>
-                    {% if search_query %}
-                    <a href="{{ request.url_for('dashboard') }}" class="btn btn-secondary btn-clear">Clear</a>
-                    {% endif %}
+    <div class="stat-card selected">
+        <div class="stat-icon">✅</div>
+        <div class="stat-content">
+            <div class="stat-label">Selected</div>
+            <div class="stat-value">{{ statistics.selected_count }}</div>
+        </div>
+    </div>
+
+    {% if statistics.total_applications > 0 %}
+    <div class="stat-card {% if statistics.selected_count > 0 %}selected{% else %}rejected{% endif %}">
+        <div class="stat-icon">📈</div>
+        <div class="stat-content">
+            <div class="stat-label">Success Rate</div>
+            <div class="stat-value">{{ "%.1f"|format((statistics.selected_count / statistics.total_applications * 100)) }}%</div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Skills Section -->
+<div class="card mb-8">
+    <div class="card-header">
+        <h2 class="card-title">
+            <span>🎯</span>
+            <span>My Skills</span>
+        </h2>
+        <a href="{{ request.url_for('add_skill_form') }}" class="btn btn-primary">
+            ➕ Add Skill
+        </a>
+    </div>
+
+    {% if skills %}
+        <div class="skills-grid">
+            {% for skill in skills %}
+                <div class="skill-chip">
+                    <span class="skill-chip-icon">💡</span>
+                    <span>{{ skill.skill_name }}</span>
+                    <form method="POST" action="{{ request.url_for('delete_skill', skill_id=skill.id) }}" class="skill-delete-form" style="display: inline;">
+                        <button type="submit" class="skill-chip-remove" onclick="return confirm('Delete this skill?');" title="Delete skill">×</button>
+                    </form>
                 </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">🎯</div>
+            <h3 class="empty-state-title">No skills added yet</h3>
+            <p class="empty-state-description">Start building your skill profile to showcase your expertise</p>
+            <a href="{{ request.url_for('add_skill_form') }}" class="btn btn-primary">
+                ➕ Add Your First Skill
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Applications Section -->
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">
+            <span>📁</span>
+            <span>Placement Applications</span>
+        </h2>
+        <a href="{{ request.url_for('add_application_form') }}" class="btn btn-primary">
+            ➕ Add Application
+        </a>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <div class="search-input-wrapper">
+            <span class="search-icon">🔍</span>
+            <form method="GET" action="{{ request.url_for('dashboard') }}" style="display: inline; width: 100%;">
+                <input 
+                    type="text" 
+                    name="search" 
+                    class="search-input" 
+                    placeholder="Search by company name..." 
+                    value="{{ search_query }}"
+                >
             </form>
         </div>
-
-        {% if applications %}
-            <div class="applications-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Company</th>
-                            <th>Status</th>
-                            <th>Date Applied</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for app in applications %}
-                            <tr class="app-row app-status-{{ app.status.lower().replace(' ', '-') }}">
-                                <td class="company-name">{{ app.company_name }}</td>
-                                <td>
-                                    <span class="status-badge status-{{ app.status.lower().replace(' ', '-') }}">
-                                        {{ app.status }}
-                                    </span>
-                                </td>
-                                <td class="date-applied">{{ app.date_applied|date_format }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% if search_query %}
-                <p class="search-result-info">Found <strong>{{ applications|length }}</strong> application(s) matching "{{ search_query }}"</p>
-            {% endif %}
-        {% else %}
-            {% if search_query %}
-                <p class="no-data">🔍 No applications found matching "{{ search_query }}". <a href="{{ request.url_for('dashboard') }}">Clear search</a></p>
-            {% else %}
-                <p class="no-data">📌 No applications yet. <a href="{{ request.url_for('add_application_form') }}">Add your first application</a></p>
-            {% endif %}
+        {% if search_query %}
+            <a href="{{ request.url_for('dashboard') }}" class="btn btn-secondary">
+                ✕ Clear
+            </a>
         {% endif %}
     </div>
+
+    {% if applications %}
+        <div class="applications-list">
+            {% for app in applications %}
+                <div class="application-card">
+                    <div class="application-header">
+                        <div class="application-company">
+                            🏢 {{ app.company_name }}
+                        </div>
+                        <div class="application-date">
+                            📅 {{ app.date_applied|date_format("%B %d, %Y") }}
+                        </div>
+                    </div>
+                    <div class="application-footer">
+                        <span class="status-badge status-{{ app.status.lower().replace(' ', '-') }}">
+                            {{ app.status }}
+                        </span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% if search_query %}
+            <div class="mt-4 text-center" style="color: var(--text-secondary); font-size: 0.9rem;">
+                Found <strong>{{ applications|length }}</strong> application(s) matching "{{ search_query }}"
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📁</div>
+            <h3 class="empty-state-title">{% if search_query %}No applications found{% else %}No applications yet{% endif %}</h3>
+            <p class="empty-state-description">
+                {% if search_query %}
+                    Try adjusting your search query
+                {% else %}
+                    Start tracking your placement applications to monitor your progress
+                {% endif %}
+            </p>
+            {% if not search_query %}
+                <a href="{{ request.url_for('add_application_form') }}" class="btn btn-primary">
+                    ➕ Add Your First Application
+                </a>
+            {% else %}
+                <a href="{{ request.url_for('dashboard') }}" class="btn btn-secondary">
+                    Clear Search
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

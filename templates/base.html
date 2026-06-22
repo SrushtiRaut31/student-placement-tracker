@@ -1,5 +1,5 @@
 <!-- Base template for all pages -->
-<!-- Includes navigation bar and common HTML structure -->
+<!-- Modern layout with sidebar navigation -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -8,34 +8,146 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Student Placement Tracker{% endblock %}</title>
     <link rel="stylesheet" href="{{ request.url_for('static', path='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Navigation bar -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="navbar-brand">
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        ☰
+    </button>
+
+    {% if request.session.get('user_id') %}
+    <div class="page-wrapper">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="{{ request.url_for('dashboard') }}" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">🎯</div>
+                    <span>Placement Tracker</span>
+                </a>
+            </div>
+
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <a href="{{ request.url_for('dashboard') }}" class="sidebar-nav-link {% if request.url.path == '/dashboard' %}active{% endif %}">
+                        <span class="sidebar-nav-icon">📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ request.url_for('add_skill_form') }}" class="sidebar-nav-link {% if '/add_skill' in request.url.path %}active{% endif %}">
+                        <span class="sidebar-nav-icon">🛠️</span>
+                        <span>Add Skills</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ request.url_for('add_application_form') }}" class="sidebar-nav-link {% if '/add_application' in request.url.path %}active{% endif %}">
+                        <span class="sidebar-nav-icon">📁</span>
+                        <span>Add Application</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-user">
+                <div class="sidebar-user-info">
+                    <div class="sidebar-user-avatar">
+                        {{ request.session.get('user_name', 'U')[:1]|upper }}
+                    </div>
+                    <div>
+                        <div class="sidebar-user-name">{{ request.session.get('user_name', 'User') }}</div>
+                        <div class="sidebar-user-email">Student</div>
+                    </div>
+                </div>
+                <a href="{{ request.url_for('logout') }}" class="sidebar-logout">
+                    🚪 Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                <div class="top-header-left">
+                    <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+                </div>
+                <div class="top-header-right">
+                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+                        🌙
+                    </button>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    {% else %}
+    <!-- Main Content for non-authenticated users -->
+    <main class="main-content full-width">
+        <!-- Top Header for non-authenticated users -->
+        <header class="top-header">
+            <div class="top-header-left">
                 <h1>Student Placement Tracker</h1>
             </div>
-            <ul class="navbar-menu">
-                {% if request.session.get('user_id') %}
-                    <li><a href="{{ request.url_for('dashboard') }}">Dashboard</a></li>
-                    <li><a href="{{ request.url_for('logout') }}">Logout ({{ request.session.get('user_name', '') }})</a></li>
-                {% else %}
-                    <li><a href="{{ request.url_for('login_form') }}">Login</a></li>
-                    <li><a href="{{ request.url_for('register_form') }}">Register</a></li>
-                {% endif %}
-            </ul>
-        </div>
-    </nav>
-
-    <!-- Main content area -->
-    <div class="container">
+        </header>
+        <!-- Page Content -->
         {% block content %}{% endblock %}
-    </div>
+    </main>
+    {% endif %}
 
     <!-- Footer -->
     <footer class="footer">
-        <p>&copy; 2024 Student Placement Tracker. All rights reserved.</p>
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2024 Student Placement Tracker. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy</a>
+                    <a href="#">Terms</a>
+                    <a href="#">Support</a>
+                </div>
+            </div>
+        </div>
     </footer>
+
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+
+        if (menuToggle && sidebar) {
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+
+            // Close sidebar when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                    sidebar.classList.remove('open');
+                }
+            });
+        }
+
+        // Dark mode toggle
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+                localStorage.setItem('theme', newTheme);
+            });
+
+            // Load saved theme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+            }
+        }
+    </script>
 </body>
 </html>

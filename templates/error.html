@@ -1,24 +1,41 @@
 {% extends "base.html" %}
 
 {% block title %}Error - Student Placement Tracker{% endblock %}
+{% block page_title %}Error{% endblock %}
 
 {% block content %}
-<div class="error-container">
-    <div class="error-box">
-        <h2>Oops! An Error Occurred</h2>
-        
-        <!-- Display error message -->
+<div class="auth-wrapper">
+    <div class="auth-card" style="max-width: 500px; text-align: center;">
+        <div class="auth-header">
+            <div class="auth-logo" style="background: linear-gradient(135deg, var(--danger-500), var(--danger-700));">
+                ⚠️
+            </div>
+            <h1 class="auth-title">Oops! Something Went Wrong</h1>
+            <p class="auth-subtitle">We encountered an unexpected error</p>
+        </div>
+
         {% if error %}
             <div class="alert alert-danger">
-                {{ error }}
+                <span class="alert-icon">⚠️</span>
+                <div class="alert-content">
+                    <div class="alert-title">Error Details</div>
+                    <div class="alert-message">{{ error }}</div>
+                </div>
             </div>
         {% endif %}
 
-        <!-- Return to dashboard link -->
-        <p>
-                <a href="{{ request.url_for('dashboard') }}" class="btn btn-primary">Back to Dashboard</a>
-            <a href="{{ request.url_for('login_form') }}" class="btn btn-secondary">Back to Login</a>
-        </p>
+        <div class="form-actions" style="justify-content: center; margin-top: var(--spacing-6);">
+            <a href="{{ request.url_for('dashboard') }}" class="btn btn-primary">
+                📊 Back to Dashboard
+            </a>
+            <a href="{{ request.url_for('login_form') }}" class="btn btn-secondary">
+                🔐 Back to Login
+            </a>
+        </div>
+
+        <div class="auth-footer">
+            <p>If the problem persists, please contact support</p>
+        </div>
     </div>
 </div>
 {% endblock %}

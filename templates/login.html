@@ -1,38 +1,62 @@
 {% extends "base.html" %}
 
 {% block title %}Login - Student Placement Tracker{% endblock %}
+{% block page_title %}Login{% endblock %}
 
 {% block content %}
-<div class="auth-container">
-    <div class="auth-box">
-        <h2>Student Login</h2>
-        
-        <!-- Display error messages if any -->
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">🎯</div>
+            <h1 class="auth-title">Welcome Back</h1>
+            <p class="auth-subtitle">Sign in to continue to your dashboard</p>
+        </div>
+
         {% if error %}
             <div class="alert alert-danger">
-                {{ error }}
+                <span class="alert-icon">⚠️</span>
+                <div class="alert-content">
+                    <div class="alert-title">Login Failed</div>
+                    <div class="alert-message">{{ error }}</div>
+                </div>
             </div>
         {% endif %}
 
-        <!-- Login form -->
         <form method="POST" class="auth-form">
             <div class="form-group">
-                <label for="email">Email Address:</label>
-                <input type="email" id="email" name="email" required placeholder="your@email.com">
+                <label for="email" class="form-label">Email Address</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    class="form-input" 
+                    required 
+                    placeholder="your@email.com"
+                    autocomplete="email"
+                >
             </div>
 
             <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required placeholder="Enter your password">
+                <label for="password" class="form-label">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    class="form-input" 
+                    required 
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                >
             </div>
 
-            <button type="submit" class="btn btn-primary">Login</button>
+            <button type="submit" class="btn btn-primary auth-submit">
+                Sign In
+            </button>
         </form>
 
-        <!-- Link to registration page -->
-        <p class="auth-link">
-            Don't have an account? <a href="{{ request.url_for('register_form') }}">Register here</a>
-        </p>
+        <div class="auth-footer">
+            <p>Don't have an account? <a href="{{ request.url_for('register_form') }}">Create one now</a></p>
+        </div>
     </div>
 </div>
 {% endblock %}
