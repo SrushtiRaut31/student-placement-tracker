@@ -79,9 +79,6 @@
                     </button>
                 </div>
             </header>
-
-            <!-- Page Content -->
-            {% block content %}{% endblock %}
         </main>
     </div>
     {% else %}
@@ -93,7 +90,8 @@
                 <h1>Student Placement Tracker</h1>
             </div>
         </header>
-        <!-- Page Content -->
+
+        <!-- Page Content Block for non-authenticated users -->
         {% block content %}{% endblock %}
     </main>
     {% endif %}
